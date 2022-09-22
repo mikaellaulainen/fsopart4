@@ -64,6 +64,27 @@ test('You can add blogs', async () => {
   expect(authors).toContain('Robert C. Martin')
 })
 
+test('succeeds with status code 204 if id is valid', async () => {
+  const blogs = await Blog.find({})
+  const blogsAtStart= blogs.map(blog => blog.toJSON())
+  const blogToDelete = blogsAtStart[0]
+  console.log(blogToDelete)
+  await api
+    .delete(`/api/blogs/${blogToDelete._id}`)
+    .expect(204)
+
+  const blogsAtEnd = await Blog.find({})
+
+  expect(blogsAtEnd).toHaveLength(
+    initialBlogs.length - 1
+  )
+
+  const authors = blogsAtEnd.map(r => r.author)
+
+  expect(authors).not.toContain(blogToDelete.author)
+})
+
+
 afterAll(() => {
   mongoose.connection.close()
 })
