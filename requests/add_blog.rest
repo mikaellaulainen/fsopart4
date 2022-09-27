@@ -1,0 +1,11 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3QgMTIzIiwiaWQiOiI2MzMyYzZjMDc3MjFjZDM4ODFlMmEwYzkiLCJpYXQiOjE2NjQyNzU1MDV9.EN7OpUORO6ebyaflDAX7P0_-6dyYrc1DqzGrJWa9vss
+
+{
+  "userId": "6332c6c07721cd3881e2a0c9",
+  "title": "Testing Authorization, jwt",
+  "author": "Mikael",
+  "url": "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.html",
+  "likes": 1000
+}
