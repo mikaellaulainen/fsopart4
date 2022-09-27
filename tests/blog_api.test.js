@@ -2,7 +2,10 @@ const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
+const bcrypt= require('bcrypt')
+const helper= require('./test_help')
 const Blog= require('../models/blog')
+const User = require('../models/users')
 jest.setTimeout(30000)
 
 const initialBlogs=[
@@ -85,6 +88,60 @@ describe('Deleting blog', () => {
     const authors = blogsAtEnd.map(r => r.author)
 
     expect(authors).not.toContain(blogToDelete.author)
+  })
+})
+
+describe('After adding first user to db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash=await bcrypt.hash('salainen', 10)
+    const user = new User({ username: 'root', passwordHash })
+    await user.save()
+  })
+  test('You can add new user', async () => {
+    const usersAtbeginning =await helper.usersInDb()
+
+    const newUser= {
+      username: 'Testi mies',
+      name:'Maker mies',
+      password:'topsecret',
+    }
+    await api
+      .post('/api/users')
+      .send(newUser).expect(201)
+      .expect('Content-Type', /application\/json/)
+    const usersAtEnd = await helper.usersInDb()
+    expect(usersAtEnd).toHaveLength(usersAtbeginning.length+1)
+
+    const usernames = usersAtEnd.map(u => u.username)
+    expect(usernames).toContain(newUser.username)
+  })
+  test('Your password must atleast 3 characters',async () => {
+    const newUser= {
+      username:'New user',
+      name:'New me',
+      password:'me'
+    }
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+  })
+  test('Adding new user with already taken username, fails', async () => {
+    const newUser= {
+      username: 'root',
+      name:'Maker mies',
+      password:'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+    expect(result.body.error).toContain('username already taken')
   })
 })
 
