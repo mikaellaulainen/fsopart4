@@ -1,0 +1,10 @@
+PUT http://localhost:3003/api/blogs/6332c6e37721cd3881e2a0cc
+Content-Type: application/json
+
+{
+  "user": "6332c6c07721cd3881e2a0c9",
+  "likes": 7,
+  "author": "Rot C. Martin",
+  "title": "First tests",
+  "url": "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.html"
+}
